@@ -8,6 +8,7 @@ import java.util.Observable;
 import model.Model;
 import model.MyModel;
 import presenter.Presenter;
+import presenter.Properties;
 import view.MyView;
 import view.View;
 
@@ -19,7 +20,7 @@ public class Run {
 		PrintWriter out = new PrintWriter(System.out);
 		
 		View view = new MyView(in , out);
-		Model model = new MyModel();
+		Model model = new MyModel(new Properties());
 		
 		Presenter pres = new Presenter(model , view);
 		

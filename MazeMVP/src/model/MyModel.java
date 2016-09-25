@@ -44,12 +44,14 @@ import io.MyDecompressorInputStream;
  * @author Maor Shmueli
  *
  */
+import presenter.Properties;
 
 public class MyModel extends Observable implements Model {
 	private HashMap<String, Maze3d> mazeCollection;//hash map that storing mazes with key name
 	private ExecutorService threadPool;
 	private HashMap<String, String> mazeToFile;//hash map with key-name of maze,value-the file name where the maze is saved
 	private HashMap<Maze3d, Solution<Position>> mazeSolutions;//hash map that hold the solution for mazes
+	private Properties properties; //properties from xml file
 	
 	
 	private String  errorCode;//the error that pop when there is an error will be sent to the observers
@@ -62,10 +64,11 @@ public class MyModel extends Observable implements Model {
 	/**
 	 * {@inheritDoc}
 	 */
-	public MyModel() {
+	public MyModel(Properties p) {
 		super();
+		this.properties = p;
 		mazeCollection = new HashMap<String, Maze3d>();
-		threadPool = Executors.newFixedThreadPool(10);
+		threadPool = Executors.newFixedThreadPool(p.getThreadsNumber());
 		
 		mazeToFile=new HashMap<String,String>();
 		mazeSolutions=new HashMap<Maze3d, Solution<Position>>();
@@ -887,19 +890,15 @@ public class MyModel extends Observable implements Model {
 			mazeCollection = (HashMap<String, Maze3d>)ois.readObject();
 			mazeSolutions = (HashMap<Maze3d, Solution<Position>>)ois.readObject();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally{
 			try {
 				ois.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}		

@@ -144,12 +144,12 @@ public class MyView extends CommonView
 	{
 		System.out.println("Help Center:");
 		System.out.println("dir <path>                                           				-display the files and directories in this specific path.");
-		System.out.println("generate_3d_maze <name> <x> <y> <z> <algorithm> {ByLastCell\\ByRandom}     	-generating maze with the specified name,with xyz dimensions with algorith:simple/prim");
+		System.out.println("generate_3d_maze <name> <x> <y> <z> <algorithm> {ByLastCell\\ByRandom}     	-generating maze with the specified name,with xyz dimensions with algorith:simple/growing");
 		System.out.println("display <name>                                       				-display the specified maze");
 		System.out.println("display_cross_section {x,y,z} <index> for <name>  				-diplaying cross section(x,y or z,chose one) in the index specified for maze with this name");
 		System.out.println("save_maze <name> <file name>                         				-save maze in file name specified");
 		System.out.println("load_maze <file name> <name>                         				-load maze from file specified");
-		System.out.println("solve <name> <algorithm>                             				-solve maze with specified algorithm:bfs/Astar manhatten distance/astar air distance");
+		System.out.println("solve <name> <algorithm>                             				-solve maze with specified algorithm:bfs/dfs");
 		System.out.println("display_solution <name>                             				-solve the maze and show the solution");
 		System.out.println("exit                                                 				-exit the program");
 		

@@ -1,13 +1,17 @@
 package algorithms.mazeGenarators;
 
+import java.io.Serializable;
+
 /**
  * <h1>Position class </h1>
  * Define a position object identified by 3 indexs
  * 
  * @author Maor Shmueli
  */
-public class Position {
+public class Position implements Serializable {
 
+
+	private static final long serialVersionUID = 1L;
 	public int z;
 	public int y;
 	public int x;

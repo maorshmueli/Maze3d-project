@@ -55,10 +55,10 @@ public class MyView extends Observable implements View, Observer
 	 */
 	public void showDirPath(String[] dirArray)
 	{
-		System.out.println("The files and directories in this path are:");
+		out.println("The files and directories in this path are:");
 		for(String s:dirArray)
 		{
-			System.out.println(s);
+			out.println(s);
 		}
 	}
 	/**
@@ -66,14 +66,14 @@ public class MyView extends Observable implements View, Observer
 	 */
 	public void showError(String message)
 	{
-		System.out.println(message);
+		out.println(message);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	public void showGenerate3dMaze(String message)
 	{
-		System.out.println(message);
+		out.println(message);
 	}
 	/**
 	 * {@inheritDoc}
@@ -83,10 +83,10 @@ public class MyView extends Observable implements View, Observer
 		try {
 			Maze3d maze3d=new Maze3d(byteArr);
 			
-			System.out.println(maze3d);
+			out.println(maze3d);
 			
-			System.out.println("The start position: "+maze3d.getStartPosition());
-			System.out.println("The goal position:  "+maze3d.getGoalPosition());
+			out.println("The start position: "+maze3d.getStartPosition());
+			out.println("The goal position:  "+maze3d.getGoalPosition());
 			
 		} 
 		catch (IOException e) 
@@ -99,28 +99,28 @@ public class MyView extends Observable implements View, Observer
 	 */
 	public void showDisplayCrossSectionBy(String crossString)
 	{
-		System.out.println(crossString);
+		out.println(crossString);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	public void showSaveMaze(String str)
 	{
-		System.out.println(str);
+		out.println(str);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	public void showLoadMaze(String str)
 	{
-		System.out.println(str);
+		out.println(str);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	public void showSolve(String message)
 	{
-		System.out.println(message);
+		out.println(message);
 	}
 
 	/**
@@ -130,7 +130,7 @@ public class MyView extends Observable implements View, Observer
 	{
 		ArrayList<State<Position>> al = (ArrayList<State<Position>>) sol.getStates();
 
-		System.out.println(al.toString());
+		out.println(al.toString());
 		
 	}
 	/**
@@ -138,18 +138,18 @@ public class MyView extends Observable implements View, Observer
 	 */
 	public void showHelp()
 	{
-		System.out.println("Help Center:");
-		System.out.println("dir <path>                                           				-display the files and directories in this specific path.");
-		System.out.println("generate_3d_maze <name> <x> <y> <z> <algorithm> {ByLastCell\\ByRandom}     	-generating maze with the specified name,with xyz dimensions with algorith:simple/prim");
-		System.out.println("display <name>                                       				-display the specified maze");
-		System.out.println("display_cross_section {x,y,z} <index> <name>  					-diplaying cross section(x,y or z,chose one) in the index specified for maze with this name");
-		System.out.println("save_maze <name> <file name>                         				-save maze in file name specified");
-		System.out.println("load_maze <file name> <name>                         				-load maze from file specified");
-		System.out.println("solve <name> <algorithm>                             				-solve maze with specified algorithm:bfs/Astar manhatten distance/astar air distance");
-		System.out.println("display_solution <name>                             				-solve the maze and show the solution");
-		System.out.println("exit                                                 				-exit the program");
+		out.println("Help Center:");
+		out.println("dir <path>                                           				-display the files and directories in this specific path.");
+		out.println("generate_3d_maze <name> <x> <y> <z> <algorithm> {ByLastCell\\ByRandom}     	-generating maze with the specified name,with xyz dimensions with algorith:simple/growing");
+		out.println("display <name>                                       				-display the specified maze");
+		out.println("display_cross_section {x,y,z} <index> <name>  					-diplaying cross section(x,y or z,chose one) in the index specified for maze with this name");
+		out.println("save_maze <name> <file name>                         				-save maze in file name specified");
+		out.println("load_maze <file name> <name>                         				-load maze from file specified");
+		out.println("solve <name> <algorithm>                             				-solve maze with specified algorithm:bfs/dfs");
+		out.println("display_solution <name>                             				-solve the maze and show the solution");
+		out.println("exit                                                 				-exit the program");
 		
-		System.out.println();
+		out.println();
 		
 	}
 
@@ -167,7 +167,7 @@ public class MyView extends Observable implements View, Observer
 	 */
 	@Override
 	public void showmessage(String message) {
-		System.out.println(message);
+		out.println(message);
 		
 	}
 

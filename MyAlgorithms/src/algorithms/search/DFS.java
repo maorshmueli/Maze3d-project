@@ -39,6 +39,11 @@ public class DFS<T> extends CommonSearcher<T> {
 	 */
 	@Override
 	public Solution<T> search(Searchable s) {
+		
+		//if there is no object to search on
+		if (s == null)
+			return null;
+		
 		//Add the start state to the stack
 		openList.add(s.getStartState());
 		//get the goal state

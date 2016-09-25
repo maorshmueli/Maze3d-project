@@ -38,6 +38,10 @@ public class BFS<T> extends CommonSearcher {
 	 */
 	@Override
 	public Solution<T> search (Searchable s){
+		//if there is no object to search on
+		if (s == null)
+			return null;
+		
 		//get the start state of the maze
 		State<T> startState = s.getStartState();
 		

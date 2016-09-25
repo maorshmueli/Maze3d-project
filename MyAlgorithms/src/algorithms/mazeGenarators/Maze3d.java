@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -16,8 +17,9 @@ import java.util.Random;
  * @author Maor Shmueli
  */
 
-public class Maze3d {
+public class Maze3d implements Serializable{
 
+	private static final long serialVersionUID = 1L;
 	private int [][][] maze3d;
 	private int rows;
 	private int columns;
