@@ -59,6 +59,7 @@ public class MyView extends Observable implements View, Observer
 		for(String s:dirArray)
 		{
 			out.println(s);
+			out.flush();
 		}
 	}
 	/**
@@ -67,6 +68,7 @@ public class MyView extends Observable implements View, Observer
 	public void showError(String message)
 	{
 		out.println(message);
+		out.flush();
 	}
 	/**
 	 * {@inheritDoc}
@@ -74,6 +76,7 @@ public class MyView extends Observable implements View, Observer
 	public void showGenerate3dMaze(String message)
 	{
 		out.println(message);
+		out.flush();
 	}
 	/**
 	 * {@inheritDoc}
@@ -87,6 +90,7 @@ public class MyView extends Observable implements View, Observer
 			
 			out.println("The start position: "+maze3d.getStartPosition());
 			out.println("The goal position:  "+maze3d.getGoalPosition());
+			out.flush();
 			
 		} 
 		catch (IOException e) 
@@ -100,6 +104,7 @@ public class MyView extends Observable implements View, Observer
 	public void showDisplayCrossSectionBy(String crossString)
 	{
 		out.println(crossString);
+		out.flush();
 	}
 	/**
 	 * {@inheritDoc}
@@ -107,6 +112,7 @@ public class MyView extends Observable implements View, Observer
 	public void showSaveMaze(String str)
 	{
 		out.println(str);
+		out.flush();
 	}
 	/**
 	 * {@inheritDoc}
@@ -114,6 +120,7 @@ public class MyView extends Observable implements View, Observer
 	public void showLoadMaze(String str)
 	{
 		out.println(str);
+		out.flush();
 	}
 	/**
 	 * {@inheritDoc}
@@ -121,6 +128,7 @@ public class MyView extends Observable implements View, Observer
 	public void showSolve(String message)
 	{
 		out.println(message);
+		out.flush();
 	}
 
 	/**
@@ -131,6 +139,7 @@ public class MyView extends Observable implements View, Observer
 		ArrayList<State<Position>> al = (ArrayList<State<Position>>) sol.getStates();
 
 		out.println(al.toString());
+		out.flush();
 		
 	}
 	/**
@@ -150,6 +159,7 @@ public class MyView extends Observable implements View, Observer
 		out.println("exit                                                 				-exit the program");
 		
 		out.println();
+		out.flush();
 		
 	}
 
@@ -168,6 +178,7 @@ public class MyView extends Observable implements View, Observer
 	@Override
 	public void showmessage(String message) {
 		out.println(message);
+		out.flush();
 		
 	}
 

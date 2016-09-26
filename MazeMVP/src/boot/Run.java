@@ -9,6 +9,7 @@ import model.Model;
 import model.MyModel;
 import presenter.Presenter;
 import presenter.Properties;
+import view.MazeWindow;
 import view.MyView;
 import view.View;
 
@@ -19,6 +20,7 @@ public class Run {
 		BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 		PrintWriter out = new PrintWriter(System.out);
 		
+		/*
 		View view = new MyView(in , out);
 		Model model = new MyModel(new Properties());
 		
@@ -26,7 +28,22 @@ public class Run {
 		
 		((Observable) model).addObserver(pres);
 		((Observable) view).addObserver(pres);
+		*/
+		//CLI
+		//view.start();
 		
+		
+		//GUI
+		View view = new MyView(in , out);
+		Model model = new MyModel(new Properties());
+		
+		view = new MazeWindow(new Properties());
+		Presenter pres = new Presenter(model , view);
+		((Observable) model).addObserver(pres);
+		((Observable) view).addObserver(pres);
+		view.start();
+		((Observable) model).addObserver(pres);
+		((Observable) view).addObserver(pres);
 		view.start();
 
 	}
