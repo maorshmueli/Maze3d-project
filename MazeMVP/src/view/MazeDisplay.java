@@ -51,6 +51,7 @@ public class MazeDisplay extends Canvas {
 	 * draw the maze
 	 */
 	public MazeDisplay(Composite parent, int style) {
+		
 		super(parent, style);
 		
 		this.mazeName = null;
@@ -69,7 +70,7 @@ public class MazeDisplay extends Canvas {
 		this.goalPosition= new Position(-1, -1, -1);
 		this.upHint = new ArrayList<Point>();
 		this.downHint = new ArrayList<Point>();
-
+		
 		// draw the maze
 		this.addPaintListener(new PaintListener() {
 			
@@ -128,6 +129,7 @@ public class MazeDisplay extends Canvas {
 				}
 			}
 		});
+		
 	}
 		
 	

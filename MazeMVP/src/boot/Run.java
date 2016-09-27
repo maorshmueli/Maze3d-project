@@ -42,9 +42,6 @@ public class Run {
 		((Observable) model).addObserver(pres);
 		((Observable) view).addObserver(pres);
 		view.start();
-		((Observable) model).addObserver(pres);
-		((Observable) view).addObserver(pres);
-		view.start();
 
 	}
 

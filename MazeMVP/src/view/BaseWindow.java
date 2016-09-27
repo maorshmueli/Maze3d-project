@@ -35,7 +35,12 @@ public abstract class BaseWindow extends Observable implements View, Runnable {
 		
 		} // shell is disposed
 
-		display.dispose(); // dispose OS components
+		exit(); // dispose OS components
+		
+	}
+	
+	public void exit() {
+		display.dispose();
 	}
 
 }
