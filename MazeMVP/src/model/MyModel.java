@@ -657,18 +657,27 @@ public class MyModel extends Observable implements Model {
 	 */
 	public void handleSolve(String[] paramArray)
 	{
+		String[] parameters = new String[2];
 			if(paramArray.length!=2)
 			{
-				errorCode = "invalid number of parameters";
-				
-				//notify the observers that error occurred
-				String[] s = new String[1];
-				s[0] = "error";
-				
-				setChanged();
-				notifyObservers(s);
-				
-				return;
+				if(paramArray.length == 1){
+					
+					parameters[0] = paramArray[0];
+					parameters[1] = properties.getSearchAlgorithm();
+				}
+				else {
+					errorCode = "invalid number of parameters";
+					
+					//notify the observers that error occurred
+					String[] s = new String[1];
+					s[0] = "error";
+					
+					setChanged();
+					notifyObservers(s);
+					
+					return;
+				}
+
 				
 			}
 			//check if  maze exists
@@ -700,7 +709,6 @@ public class MyModel extends Observable implements Model {
 				notifyObservers(s);
 			}
 			
-
 			Future<String> future = threadPool.submit(new Callable<String>() {
 
 				@Override
@@ -708,51 +716,51 @@ public class MyModel extends Observable implements Model {
 
 					
 					
-					if(paramArray[1].toString().equals("bfs"))
+					if(parameters[1].toString().equals("bfs"))
 					{
-						MazeAdapter ms=new MazeAdapter(mazeCollection.get(paramArray[0]));
+						MazeAdapter ms=new MazeAdapter(mazeCollection.get(parameters[0]));
 						
 						Searcher<Position> bfs=new BFS<Position>();
 						Solution<Position> sol=bfs.search(ms);
 						
 						//check if solution for the maze already exists, if so, replace it with the new one
-						if(mazeSolutions.containsKey(mazeCollection.get(paramArray[0]))) {
-							mazeSolutions.remove(mazeCollection.get(paramArray[0]));
-							mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
+						if(mazeSolutions.containsKey(mazeCollection.get(parameters[0]))) {
+							mazeSolutions.remove(mazeCollection.get(parameters[0]));
+							mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
 						}
 						else {
-							mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
+							mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
 						}
 						
 						//message to the observers
-						message = "Solution for "+paramArray[0]+ " is ready";
+						message = "Solution for "+parameters[0]+ " is ready";
 						
 						//thread returns maze name if solve command succeeded
-						return paramArray[0];
+						return parameters[0];
 						
 						
 					}
-					else if(paramArray[1].toString().equals("dfs"))
+					else if(parameters[1].toString().equals("dfs"))
 					{
-						MazeAdapter ms=new MazeAdapter(mazeCollection.get(paramArray[0]));
+						MazeAdapter ms=new MazeAdapter(mazeCollection.get(parameters[0]));
 						
 						Searcher<Position> dfs=new DFS<Position>();
 						Solution<Position> sol=dfs.search(ms);
 						
 						//check if solution for the maze already exists, if so, replace it with the new one
-						if(mazeSolutions.containsKey(mazeCollection.get(paramArray[0]))) {
-							mazeSolutions.remove(mazeCollection.get(paramArray[0]));
-							mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
+						if(mazeSolutions.containsKey(mazeCollection.get(parameters[0]))) {
+							mazeSolutions.remove(mazeCollection.get(parameters[0]));
+							mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
 						}
 						else {
-							mazeSolutions.put(mazeCollection.get(paramArray[0]), sol);
+							mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
 						}
 						
 						//message to the observers
-						message = "Solution for "+paramArray[0]+ " is ready";
+						message = "Solution for "+parameters[0]+ " is ready";
 						
 						//thread returns maze name if solve command succeeded
-						return paramArray[0];
+						return parameters[0];
 					}
 					else
 					{	

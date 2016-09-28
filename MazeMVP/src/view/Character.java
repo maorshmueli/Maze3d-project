@@ -11,7 +11,8 @@ public class Character {
 	private Image img;
 	
 	public Character() {
-		this.img = new Image(null, "resources/images/android.png");
+		//this.img = new Image(null, "resources/images/android.png");
+		this.img = new Image(null, "resources/images/character.png");
 	}
 
 	public Position getPos() {

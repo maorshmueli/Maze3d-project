@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import algorithms.mazeGenarators.Maze3d;
 import algorithms.mazeGenarators.Position;
+import algorithms.search.Solution;
 import view.MyView;
 
 /**
@@ -41,6 +42,7 @@ public class MazeDisplay extends Canvas {
 	private Image imgDown;
 	private Image imgUpDown;
 	private Image imgWall;
+	private Image imgMark;
 	private boolean drawMeAHint;
 	private Position hintPosition;
 	private boolean winner;
@@ -48,6 +50,8 @@ public class MazeDisplay extends Canvas {
 	private List<Point> downHint;
 	private List<Point> upHint;
 	private Maze3d maze;
+	private boolean solRequested = false;
+	private Solution<Position> solution;
 
 	/**
 	 * Constructor 
@@ -69,6 +73,7 @@ public class MazeDisplay extends Canvas {
 		this.imgDown = new Image(null, "resources/images/down.gif");
 		this.imgUpDown = new Image(null, "resources/images/updown.gif");
 		this.imgWall = new Image(null, "resources/images/wall.gif");
+		this.imgMark = new Image(null, "resources/images/mark.png");
 		this.drawMeAHint = false;
 		this.hintPosition = null;
 		this.winner = false;
@@ -112,12 +117,20 @@ public class MazeDisplay extends Canvas {
 								hintPosition.y = j;
 								hintPosition.x = i;
 								
-								if(maze.checkPossibleMove(hintPosition, "Forward"))
-									e.gc.drawImage(imgUp, 0, 0, imgUp.getBounds().width, imgUp.getBounds().height, x, y, cellWidth, cellHeight);
-								else if (maze.checkPossibleMove(hintPosition, "Backward")){
-									e.gc.drawImage(imgDown, 0, 0, imgDown.getBounds().width, imgDown.getBounds().height, x, y, cellWidth, cellHeight);
+								if ((maze.checkPossibleMove(hintPosition, "Forward")&&(maze.checkPossibleMove(hintPosition, "Backward")))){
+									e.gc.drawImage(imgUpDown, 0, 0, imgUpDown.getBounds().width, imgUpDown.getBounds().height, cellWidth * j, cellHeight * i, cellWidth, cellHeight);
 								}
-									
+								else {
+									if(maze.checkPossibleMove(hintPosition, "Forward"))
+										e.gc.drawImage(imgUp, 0, 0, imgUp.getBounds().width, imgUp.getBounds().height, x, y, cellWidth, cellHeight);
+									else if (maze.checkPossibleMove(hintPosition, "Backward")){
+										e.gc.drawImage(imgDown, 0, 0, imgDown.getBounds().width, imgDown.getBounds().height, x, y, cellWidth, cellHeight);
+									}
+								}
+							}
+							
+							if((solRequested) && (solution.getStates().contains(new Position(whichFloorAmI,i,j)))){
+								e.gc.drawImage(imgMark, 0, 0, imgMark.getBounds().width, imgMark.getBounds().height, x, y, cellWidth, cellHeight);
 							}
 							
 							
@@ -203,6 +216,7 @@ public class MazeDisplay extends Canvas {
 	 * @param pos, the position
 	 */
 	public void moveTheCharacter(Position pos) {
+		setCrossSection(maze.getCrossSectionByZ(pos.z),null,null);
 		this.character.setPos(pos);
 		//redrawMe();
 	}
@@ -239,7 +253,6 @@ public class MazeDisplay extends Canvas {
 		//if(maze.getMaze3d()[nexPos.z][nexPos.y][nexPos.x] ==0 )
 		if(maze.checkPossibleMove(character.getPos(), step)){
 			drawHint(nexPos);
-			setCrossSection(maze.getCrossSectionByZ(nexPos.z),null,null);
 			moveTheCharacter(nexPos);
 			
 		}
@@ -304,6 +317,16 @@ public class MazeDisplay extends Canvas {
 	
 	public Character getCharacter() {
 		return character;
+	}
+	
+	public void mark(Position p){
+		solRequested = true;
+	}
+
+
+
+	public void setSolution(Solution<Position> solution) {
+		this.solution = solution;
 	}
 
 	

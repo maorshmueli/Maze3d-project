@@ -9,7 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JComboBox;
 
@@ -23,7 +27,9 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.theme.GroupDrawData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -43,6 +49,7 @@ import algorithms.mazeGenarators.GrowingTreeGenerator;
 import algorithms.mazeGenarators.Maze3d;
 import algorithms.mazeGenarators.Position;
 import algorithms.search.Solution;
+import algorithms.search.State;
 import presenter.Properties;
 
 
@@ -52,6 +59,7 @@ public class MazeWindow extends BaseWindow {
 	private Properties properties;
 	private String[] mazes;
 	private String currentMaze;
+	private boolean isDisplayed = false;
 	
 	
 	public MazeWindow(Properties p) {
@@ -65,8 +73,8 @@ public class MazeWindow extends BaseWindow {
 		GridLayout gridLayout = new GridLayout(2, false);
 		
 		shell.setLayout(gridLayout);
-		
-		String selectedMaze;
+		shell.setText("Maze 3D Game");
+		shell.setBackgroundImage(new Image(null, "resources/images/backgroundBig.jpg"));
 		
 		
 		// Open in center of screen
@@ -96,6 +104,32 @@ public class MazeWindow extends BaseWindow {
 		Button btnSolveMaze = new Button(btnGroup, SWT.PUSH);
 		btnSolveMaze.setText("Solve maze");
 		
+		btnSolveMaze.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				if(isDisplayed){
+					
+					//notify observers to for solving
+					setChanged();
+					notifyObservers("solve "+ currentMaze);
+					
+					//notify observers to for displaying solution
+					setChanged();
+					notifyObservers("display_solution "+ currentMaze);
+				}
+				
+				else {
+					showMessageBox("Please display the maze first!");
+				}
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				//
+			}
+		});
 		
 		Button btnDisplayMaze = new Button(btnGroup, SWT.PUSH);
 		btnDisplayMaze.setText("Display maze");	
@@ -135,6 +169,7 @@ public class MazeWindow extends BaseWindow {
 					//notify observers to for returning the maze
 					setChanged();
 					notifyObservers("display "+ currentMaze);
+					isDisplayed = true;
 				}
 				
 				else {
@@ -152,6 +187,7 @@ public class MazeWindow extends BaseWindow {
 		
 		mazeDisplay = new MazeDisplay(shell, SWT.BORDER);
         mazeDisplay.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true)); //fill all the window size
+        mazeDisplay.setBackgroundImage(new Image(null, "resources/images/backgroundBig.jpg"));
         mazeDisplay.setFocus();
         
         mazeDisplay.addKeyListener(new KeyListener() {
@@ -217,8 +253,8 @@ public class MazeWindow extends BaseWindow {
         mazeLoadItem.setText("&Load maze from file");
         MenuItem mazeSaveItem = new MenuItem(fileMenu, SWT.PUSH);
         mazeSaveItem.setText("&Save maze to file");
-        MenuItem fileSaveItem = new MenuItem(fileMenu, SWT.PUSH);
-        fileSaveItem.setText("&Exit");
+        MenuItem fileexitItem = new MenuItem(fileMenu, SWT.PUSH);
+        fileexitItem.setText("&Exit");
         
         //Maze
         MenuItem mazeChooseItem = new MenuItem(mazeMenu, SWT.PUSH);
@@ -254,6 +290,22 @@ public class MazeWindow extends BaseWindow {
 				
 				showChooseMaze();
 
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
+        fileexitItem.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				//close window and send the observers exit command
+				exit();
 				
 			}
 			
@@ -333,7 +385,6 @@ public class MazeWindow extends BaseWindow {
 		
 		
 		
-
 		shell.open();		
 		
 	
@@ -481,7 +532,8 @@ public class MazeWindow extends BaseWindow {
 		}
 		
 
-		Position startPos = maze3d.getFirstInnerCell(); //first cell
+		//Position startPos = maze3d.getFirstInnerCell(); //first cell
+		Position startPos = maze3d.getStartPosition(); //first cell
 		mazeDisplay.setCharacterPosition(startPos);
 		
 		mazeDisplay.setMaze(maze3d);
@@ -517,8 +569,47 @@ public class MazeWindow extends BaseWindow {
 
 	@Override
 	public void showDisplaySolution(Solution<Position> sol) {
-		// TODO Auto-generated method stub
-		
+		/*
+		ArrayList<State<Position>> al = (ArrayList<State<Position>>) sol.getStates();
+		for(State<Position> currState: al) {
+			mazeDisplay.moveTheCharacter(currState.getValue());
+			mazeDisplay.redrawMe();
+			try {
+				TimeUnit.MILLISECONDS.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		*/
+		mazeDisplay.setSolution(sol);
+		this.animationSolutionTask = new TimerTask() {
+			
+			int i = 0;
+			
+			@Override
+			public void run() {
+				if (i < sol.getStates().size()){ //if didn't reached the goal position
+					mazeDisplay.moveTheCharacter(sol.getStates().get(i++).getValue());
+					mazeDisplay.mark(sol.getStates().get(i++).getValue());
+					mazeDisplay.redrawMe();
+				}
+				else {
+					display.syncExec(new Runnable() {
+
+						@Override
+						public void run() {
+							//winner();
+						}
+						
+					});
+					cancel();
+				}
+			}
+		};
+		this.showSolutionByAnimation = new Timer();
+		this.showSolutionByAnimation.scheduleAtFixedRate(this.animationSolutionTask, 0, 500);
+
 	}
 
 	@Override
