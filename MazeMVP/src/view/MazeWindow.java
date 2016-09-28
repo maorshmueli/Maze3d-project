@@ -3,6 +3,8 @@ package view;
 import org.eclipse.swt.widgets.Menu;
 
 import org.eclipse.swt.widgets.MenuItem;
+
+import java.awt.MenuBar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -48,10 +50,13 @@ public class MazeWindow extends BaseWindow {
 
 	private MazeDisplay mazeDisplay;
 	private Properties properties;
+	private String[] mazes;
+	private String currentMaze;
 	
 	
 	public MazeWindow(Properties p) {
 		this.properties = p;
+		this.currentMaze = null;
 	}
 	
 	@Override
@@ -81,28 +86,12 @@ public class MazeWindow extends BaseWindow {
 			}
 		});
 		
-				
+		
 		Composite btnGroup = new Composite(shell, SWT.BORDER);
 		RowLayout rowLayout = new RowLayout(SWT.VERTICAL);
 		btnGroup.setLayout(rowLayout);
+		btnGroup.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
 		
-		Button btnGenerateMaze = new Button(btnGroup, SWT.PUSH);
-		btnGenerateMaze.setText("Generate maze");	
-		
-		btnGenerateMaze.addSelectionListener(new SelectionListener() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				showGenerateMazeOptions();
-				
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-		});
 		
 		Button btnSolveMaze = new Button(btnGroup, SWT.PUSH);
 		btnSolveMaze.setText("Solve maze");
@@ -111,11 +100,12 @@ public class MazeWindow extends BaseWindow {
 		Button btnDisplayMaze = new Button(btnGroup, SWT.PUSH);
 		btnDisplayMaze.setText("Display maze");	
 		
+		/*
 		//text box got which maze do we working on
 		Label lblMaze = new Label(btnGroup, SWT.NONE);
 		lblMaze.setText("Maze Name: ");
 		Text txtMaze = new Text(btnGroup, SWT.BORDER);
-		txtMaze.setText("<Choose_Maze>");
+		txtMaze.setText("<Choose_Maze>"); ---------------------------------------------------------
 		
 		//textbox default value
 		txtMaze.addFocusListener(new FocusListener() {
@@ -132,45 +122,24 @@ public class MazeWindow extends BaseWindow {
 
 			}
 		});
-
-		/*
-		Combo combo = new Combo(btnGroup, SWT.PUSH);
-		combo.add("maor");
-		combo.add("gilad");
-		
-		
-		combo.addSelectionListener(new SelectionListener() {
-			
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				//String selectedMaze = combo.getItem(combo.getSelectionIndex()).toString();
-				String selectedMaze = combo.getText();
-				MessageBox msg = new MessageBox(shell);
-				msg.setMessage(selectedMaze);
-				msg.open();
-				shell.redraw();
-				
-			}
-			
-			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-				
-			}
-		});
-		*/
+*/
 		
 		btnDisplayMaze.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				//setting the maze name
-				mazeDisplay.setMazeName(txtMaze.getText());
+				if(currentMaze != null){
+					//setting the maze name
+					mazeDisplay.setMazeName(currentMaze);
+					
+					//notify observers to for returning the maze
+					setChanged();
+					notifyObservers("display "+ currentMaze);
+				}
 				
-				//notify observers to for returning the maze
-				setChanged();
-				notifyObservers("display "+ txtMaze.getText());
+				else {
+					showMessageBox("Please choose a maze from the maze menu!");
+				}
 				
 			}
 			
@@ -227,7 +196,77 @@ public class MazeWindow extends BaseWindow {
 			}
 		});
         
+        //******************Menu Bar********************/
+        //new bar
+        Menu menuBar = new Menu(shell, SWT.BAR);
+        
+        //top items
+        MenuItem fileMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+        fileMenuHeader.setText("&File");
+        Menu fileMenu = new Menu(shell, SWT.DROP_DOWN);
+        fileMenuHeader.setMenu(fileMenu);
+        
+        MenuItem mazeMenuHeader = new MenuItem(menuBar, SWT.CASCADE);
+        mazeMenuHeader.setText("&Maze"); 
+        Menu mazeMenu = new Menu(shell, SWT.DROP_DOWN);
+        mazeMenuHeader.setMenu(mazeMenu);
+        
+        //Childs Items
+        //File
+        MenuItem mazeLoadItem = new MenuItem(fileMenu, SWT.PUSH);
+        mazeLoadItem.setText("&Load maze from file");
+        MenuItem mazeSaveItem = new MenuItem(fileMenu, SWT.PUSH);
+        mazeSaveItem.setText("&Save maze to file");
+        MenuItem fileSaveItem = new MenuItem(fileMenu, SWT.PUSH);
+        fileSaveItem.setText("&Exit");
+        
+        //Maze
+        MenuItem mazeChooseItem = new MenuItem(mazeMenu, SWT.PUSH);
+        mazeChooseItem.setText("&Choose a maze");
+        MenuItem mazeGenerateItem = new MenuItem(mazeMenu, SWT.PUSH);
+        mazeGenerateItem.setText("&Generate maze");
+        
+        //Menu listeners
+        mazeGenerateItem.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
 
+				showGenerateMazeOptions();
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
+        mazeChooseItem.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				//notify observers to generate the maze to get mazes list
+				setChanged();
+				notifyObservers("get_all_mazes");
+				
+				
+				showChooseMaze();
+
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
+        shell.setMenuBar(menuBar);
+        //******************END Menu Bar********************/
+		
 	}
 
 	protected void showGenerateMazeOptions() {
@@ -250,17 +289,17 @@ public class MazeWindow extends BaseWindow {
 		Label lblFloors = new Label(shell, SWT.NONE);
 		lblFloors.setText("Floors: ");
 		Text txtFloors = new Text(shell, SWT.BORDER);
-		txtFloors.setText("3");
+		txtFloors.setText("4");
 		
 		Label lblRows = new Label(shell, SWT.NONE);
 		lblRows.setText("Rows: ");
 		Text txtRows = new Text(shell, SWT.BORDER);
-		txtRows.setText("3");
+		txtRows.setText("4");
 		
 		Label lblCols = new Label(shell, SWT.NONE);
 		lblCols.setText("Cols: ");
 		Text txtCols = new Text(shell, SWT.BORDER);
-		txtCols.setText("3");
+		txtCols.setText("4");
 		
 		Label lblName = new Label(shell, SWT.NONE);
 		lblName.setText("Maze name: ");
@@ -283,6 +322,58 @@ public class MazeWindow extends BaseWindow {
 						+ txtName.getText() + " " + txtFloors.getText() + " "
 						+ txtRows.getText() + " " + txtCols.getText() + " "
 						+ properties.getGenerateMazeAlgorithm());
+				shell.dispose();
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				//
+			}
+		});
+		
+		
+		
+
+		shell.open();		
+		
+	
+	}
+	protected void showChooseMaze() {
+		Shell shell = new Shell();
+		shell.setText("Choose Maze");
+		shell.setSize(250, 100);
+		
+		
+		
+		// Open in center of screen
+		Rectangle bounds = display.getPrimaryMonitor().getBounds();
+		Rectangle rect = shell.getBounds();
+		int x = bounds.x + (bounds.width - rect.width) / 2;
+		int y = bounds.y + (bounds.height - rect.height) / 2;
+		shell.setLocation(x, y);
+		
+		GridLayout layout = new GridLayout(2, false);
+		shell.setLayout(layout);
+		
+		//label for choosing a maze
+		Label lblChoose = new Label(shell, SWT.NONE);
+		lblChoose.setText("Please Choose a maze: ");
+
+		//comboBox list of all availiable mazes
+		Combo combo = new Combo(shell, SWT.READ_ONLY);
+		combo.setItems(mazes);
+		
+		
+		Button btnChoose = new Button(shell, SWT.PUSH);
+		btnChoose.setText("Choose maze");
+		
+
+		
+		btnChoose.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {	
+				currentMaze = combo.getText();
 				shell.dispose();
 			}
 			
@@ -400,10 +491,11 @@ public class MazeWindow extends BaseWindow {
 		//mazeDisplay.setGoalPosition(new Position(3,3,3));
 		mazeDisplay.setGoalPosition(maze3d.getGoalPosition());
 		
+		/*
 		MessageBox msg = new MessageBox(shell);
 		msg.setMessage(maze3d.toString());
 		msg.open();	
-		
+		*/
 		//DEBUG
 		Label lbltest = new Label(shell, SWT.NONE);
 		lbltest.setText("start: " + startPos + "\n" + "goal: " + maze3d.getGoalPosition());
@@ -427,6 +519,11 @@ public class MazeWindow extends BaseWindow {
 	public void showDisplaySolution(Solution<Position> sol) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void showMazeNameList(String[] mazes) {
+		this.mazes = mazes;
 	}
 
 }

@@ -107,6 +107,14 @@ public class CommandManager {
 				
 			}
 		});
+		viewStringToCommand.put("get_all_mazes", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				m.handleGetMazesList(args);
+				
+			}
+		});
 		viewStringToCommand.put("exit", new Command() {
 			
 			@Override
@@ -115,6 +123,8 @@ public class CommandManager {
 				
 			}
 		});
+	
+		
 		
 		//**************Commands from view***************
 		modelStringToCommand.put("dir",new Command()
@@ -162,6 +172,14 @@ public class CommandManager {
 			@Override
 			public void doCommand(String[] args) {
 				v.showmessage(m.getMessage());
+			}
+		});
+		modelStringToCommand.put("get_all_mazes", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				v.showMazeNameList(m.GetMazesList());
+				
 			}
 		});
 		

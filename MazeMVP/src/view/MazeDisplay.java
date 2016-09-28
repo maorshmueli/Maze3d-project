@@ -1,6 +1,7 @@
 package view;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
@@ -91,24 +92,43 @@ public class MazeDisplay extends Canvas {
 				int cellHeight = canvasHeight / crossSection.length;
 				
 				whichFloorAmI = character.getPos().z;
-
+				
+				hintPosition = new Position(-1 ,-1,-1);
 				e.gc.setForeground(new Color(null, 1, 255, 0));
 				e.gc.setBackground(new Color(null, 0, 0, 0));
 
-				for (int i = 0; i < crossSection.length; i++) {
-					for (int j = 0; j < crossSection[i].length; j++) {
-						x = i * cellWidth;
-						y = j * cellHeight;
-						if (crossSection[i][j] != 0)
-							//e.gc.fillRectangle(x, y, cellWidth, cellHeight);
-							e.gc.drawImage(imgWall, 0, 0, imgWall.getBounds().width, imgWall.getBounds().height, x, y, cellWidth, cellHeight);
-						
+				if(mazeName != null) {
+					for (int i = 0; i < crossSection.length; i++) {
+						for (int j = 0; j < crossSection[i].length; j++) {
+							x = i * cellWidth;
+							y = j * cellHeight;
+							
+							int[][] crossSection2 = crossSection;
+							if (crossSection[i][j] != 0)
+								//e.gc.fillRectangle(x, y, cellWidth, cellHeight);
+								e.gc.drawImage(imgWall, 0, 0, imgWall.getBounds().width, imgWall.getBounds().height, x, y, cellWidth, cellHeight);
+							if (crossSection[i][j] == 0){
+								hintPosition.z = whichFloorAmI;
+								hintPosition.y = j;
+								hintPosition.x = i;
+								
+								if(maze.checkPossibleMove(hintPosition, "Forward"))
+									e.gc.drawImage(imgUp, 0, 0, imgUp.getBounds().width, imgUp.getBounds().height, x, y, cellWidth, cellHeight);
+								else if (maze.checkPossibleMove(hintPosition, "Backward")){
+									e.gc.drawImage(imgDown, 0, 0, imgDown.getBounds().width, imgDown.getBounds().height, x, y, cellWidth, cellHeight);
+								}
+									
+							}
+							
+							
+						}
 					}
 				}
 				
 				if (drawMeAHint) {
 					drawMeAHint = false;
-					e.gc.drawImage(imgGoal, 0, 0, imgGoal.getBounds().width, imgGoal.getBounds().height, (cellWidth * hintPosition.x) + (cellWidth / 4), (cellHeight * hintPosition.y) + (cellHeight / 4), cellWidth/2, cellHeight/2);
+					//e.gc.drawImage(imgGoal, 0, 0, imgGoal.getBounds().width, imgGoal.getBounds().height, (cellWidth * hintPosition.x) + (cellWidth / 4), (cellHeight * hintPosition.y) + (cellHeight / 4), cellWidth/2, cellHeight/2);
+					//paintUpDownHints(e,hintPosition.x,hintPosition.x,cellWidth,cellHeight);
 				}
 				
 				
@@ -166,7 +186,7 @@ public class MazeDisplay extends Canvas {
 		this.crossSection = crossSection;
 		this.upHint = upHint;
 		this.downHint = downHint;
-		redrawMe();
+		//redrawMe();
 	}
 
 	/**
@@ -228,11 +248,19 @@ public class MazeDisplay extends Canvas {
 		
 	}
 	/**
-	 * setMazeName 
+	 * set the Maze Name 
 	 * @param String mazeName
 	 */
 	public void setMazeName(String mazeName) {
 		this.mazeName = mazeName;
+	}
+	
+	/**
+	 * get the Maze Name 
+	 * @param String mazeName
+	 */
+	public String getMazeName() {
+		return mazeName;
 	}
 	
 	/**

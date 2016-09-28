@@ -75,4 +75,10 @@ public interface View {
 	 * @param sol the solution of the maze
 	 */
 	public void showDisplaySolution(Solution<Position> sol);
+	
+	/**
+	 * displaying all mazes name in the list
+	 * @param byteArr byte array representing the maze
+	 */
+	public void showMazeNameList(String[] mazes);
 }

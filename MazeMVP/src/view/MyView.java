@@ -182,4 +182,9 @@ public class MyView extends Observable implements View, Observer
 		
 	}
 
+	@Override
+	public void showMazeNameList(String[] mazes) {
+		// TODO Auto-generated method stub
+	}
+
 }

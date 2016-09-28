@@ -65,6 +65,12 @@ public interface Model {
 	public void handleExitCommand(String[] emptyArr);
 	
 	/**
+	 * get all mazes name in the list
+	 * @param emptyArr there is nothing there
+	 */
+	public void handleGetMazesList(String[] paramarray);
+	
+	/**
 	 * errorCode getter
 	 * @return errorCode
 	 */
@@ -96,7 +102,14 @@ public interface Model {
 
 	/**
 	 * get maze as byte array by name from maze collection
-	 * @return maze string
+	 * @return maze byte array
 	 */
 	public byte[] getMazeByName(String name);
+	
+	/**
+	 * get all mazes name in the list
+	 * @return mazes string array
+	 */
+	public String[] GetMazesList();
+	
 }

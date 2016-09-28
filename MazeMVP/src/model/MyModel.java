@@ -794,6 +794,24 @@ public class MyModel extends Observable implements Model {
 	/**
 	 * {@inheritDoc}
 	 */
+	public void handleGetMazesList(String[] paramarray)
+	{
+	
+			//update hasCahnged status
+			setChanged();
+			
+			//for send specific notification
+			String[] s = new String[1];
+			s[0] = "get_all_mazes";
+			notifyObservers(s);
+			
+			return;
+
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	public void handleDisplaySolution(String[] paramarray)
 	{
 		if(paramarray.length!=1)
@@ -854,7 +872,6 @@ public class MyModel extends Observable implements Model {
 			return;
 		}
 	}
-	
 	private void saveSolutions() {
 		ObjectOutputStream oos = null;
 		try {
@@ -950,6 +967,15 @@ public class MyModel extends Observable implements Model {
 		Maze3d maze = mazeCollection.get(name);
 		return maze.toByteArray();
 		
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String[] GetMazesList() {
+		return mazeCollection.keySet().toArray(new String[0]);
+
 	}
 	
 }
