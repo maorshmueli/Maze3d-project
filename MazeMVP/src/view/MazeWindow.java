@@ -221,6 +221,11 @@ public class MazeWindow extends BaseWindow {
 				{
 					mazeDisplay.moveTheCharacterByDirection(Step);
 					mazeDisplay.redrawMe();
+					
+					//check if user reached goal position - winner
+					if(mazeDisplay.checkWinner())
+						showMessageBox("You are the winner!");
+					
 				}
 				
 			}
@@ -522,6 +527,9 @@ public class MazeWindow extends BaseWindow {
 	@Override
 	public void showDisplayName(byte[] byteArr) {
 
+		//unmark solution trace from old mazes
+		mazeDisplay.unMarkTheSolution();
+		
 		//Convert maze from byeArray
 		Maze3d maze3d = null;
 		try {
@@ -532,8 +540,8 @@ public class MazeWindow extends BaseWindow {
 		}
 		
 
-		//Position startPos = maze3d.getFirstInnerCell(); //first cell
-		Position startPos = maze3d.getStartPosition(); //first cell
+		Position startPos = maze3d.getFirstInnerCell(); //first cell
+		//Position startPos = maze3d.getStartPosition(); //first cell
 		mazeDisplay.setCharacterPosition(startPos);
 		
 		mazeDisplay.setMaze(maze3d);
@@ -569,20 +577,12 @@ public class MazeWindow extends BaseWindow {
 
 	@Override
 	public void showDisplaySolution(Solution<Position> sol) {
-		/*
-		ArrayList<State<Position>> al = (ArrayList<State<Position>>) sol.getStates();
-		for(State<Position> currState: al) {
-			mazeDisplay.moveTheCharacter(currState.getValue());
-			mazeDisplay.redrawMe();
-			try {
-				TimeUnit.MILLISECONDS.sleep(500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		*/
+		//setting the solution in mazeDisplay
 		mazeDisplay.setSolution(sol);
+		
+		//mark the solution with RED light
+		mazeDisplay.markTheSolution();
+		
 		this.animationSolutionTask = new TimerTask() {
 			
 			int i = 0;
@@ -591,24 +591,16 @@ public class MazeWindow extends BaseWindow {
 			public void run() {
 				if (i < sol.getStates().size()){ //if didn't reached the goal position
 					mazeDisplay.moveTheCharacter(sol.getStates().get(i++).getValue());
-					mazeDisplay.mark(sol.getStates().get(i++).getValue());
 					mazeDisplay.redrawMe();
 				}
-				else {
-					display.syncExec(new Runnable() {
-
-						@Override
-						public void run() {
-							//winner();
-						}
-						
-					});
-					cancel();
-				}
+				
 			}
 		};
 		this.showSolutionByAnimation = new Timer();
 		this.showSolutionByAnimation.scheduleAtFixedRate(this.animationSolutionTask, 0, 500);
+		
+
+
 
 	}
 

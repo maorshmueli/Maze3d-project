@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Shell;
 import algorithms.mazeGenarators.Maze3d;
 import algorithms.mazeGenarators.Position;
 import algorithms.search.Solution;
+import algorithms.search.State;
 import view.MyView;
 
 /**
@@ -45,7 +46,6 @@ public class MazeDisplay extends Canvas {
 	private Image imgMark;
 	private boolean drawMeAHint;
 	private Position hintPosition;
-	private boolean winner;
 	private Position goalPosition;
 	private List<Point> downHint;
 	private List<Point> upHint;
@@ -67,7 +67,7 @@ public class MazeDisplay extends Canvas {
 			
 		this.character = new Character();
 		this.character.setPos(new Position(-1, -1, -1));
-		this.imgGoal = new Image(null,"resources/images/apple.png");
+		this.imgGoal = new Image(null,"resources/images/goal.png");
 		this.imgWinner = new Image(null,"resources/images/winner.gif");
 		this.imgUp = new Image(null, "resources/images/up.gif");
 		this.imgDown = new Image(null, "resources/images/down.gif");
@@ -76,7 +76,6 @@ public class MazeDisplay extends Canvas {
 		this.imgMark = new Image(null, "resources/images/mark.png");
 		this.drawMeAHint = false;
 		this.hintPosition = null;
-		this.winner = false;
 		this.goalPosition= new Position(-1, -1, -1);
 		this.upHint = new ArrayList<Point>();
 		this.downHint = new ArrayList<Point>();
@@ -118,7 +117,7 @@ public class MazeDisplay extends Canvas {
 								hintPosition.x = i;
 								
 								if ((maze.checkPossibleMove(hintPosition, "Forward")&&(maze.checkPossibleMove(hintPosition, "Backward")))){
-									e.gc.drawImage(imgUpDown, 0, 0, imgUpDown.getBounds().width, imgUpDown.getBounds().height, cellWidth * j, cellHeight * i, cellWidth, cellHeight);
+									e.gc.drawImage(imgUpDown, 0, 0, imgUpDown.getBounds().width, imgUpDown.getBounds().height,x, y, cellWidth, cellHeight);
 								}
 								else {
 									if(maze.checkPossibleMove(hintPosition, "Forward"))
@@ -128,8 +127,8 @@ public class MazeDisplay extends Canvas {
 									}
 								}
 							}
-							
-							if((solRequested) && (solution.getStates().contains(new Position(whichFloorAmI,i,j)))){
+							//for marking the solution with red light
+							if((solRequested) && (solution.getStates().contains(new State<Position>(new Position(whichFloorAmI,j,i))))){
 								e.gc.drawImage(imgMark, 0, 0, imgMark.getBounds().width, imgMark.getBounds().height, x, y, cellWidth, cellHeight);
 							}
 							
@@ -145,12 +144,16 @@ public class MazeDisplay extends Canvas {
 				}
 				
 				
-				if (!winner) {
+				//find if reached the goal position - winner
+				if(checkWinner()){
+					e.gc.drawImage(imgWinner, 0, 0, imgWinner.getBounds().width, imgWinner.getBounds().height, cellWidth * goalPosition.x, cellHeight * goalPosition.y, cellWidth, cellHeight);
+				}
+				else {
 					character.draw(cellWidth, cellHeight, e.gc);
 					if (whichFloorAmI == goalPosition.z)
 						e.gc.drawImage(imgGoal, 0, 0, imgGoal.getBounds().width, imgGoal.getBounds().height, cellWidth * goalPosition.x, cellHeight * goalPosition.y, cellWidth, cellHeight);
-				} else
-					e.gc.drawImage(imgWinner, 0, 0, imgWinner.getBounds().width, imgWinner.getBounds().height, cellWidth * goalPosition.x, cellHeight * goalPosition.y, cellWidth, cellHeight);
+				} 
+					
 				
 				
 				forceFocus();
@@ -173,13 +176,14 @@ public class MazeDisplay extends Canvas {
 		
 	
 	/**
-	 * setWinner
-	 * @param winner, boolean
+	 * check if user reached goal position - winner
+	 * @param boolean
 	 */
 
-	public void setWinner(boolean winner) {
-		this.winner = winner;
+	public boolean checkWinner() {
+		return (character.getPos().equals(goalPosition));
 	}
+	
 
 	/**
 	 *This method tell us where are we in the maze
@@ -319,12 +323,25 @@ public class MazeDisplay extends Canvas {
 		return character;
 	}
 	
-	public void mark(Position p){
+	/**
+	 * mark the solution trace
+	 */
+	public void markTheSolution(){
 		solRequested = true;
+	}
+	
+	/**
+	 * unmark the solution trace
+	 */
+	public void unMarkTheSolution(){
+		solRequested = false;
 	}
 
 
-
+	/**
+	 * set the solution of the maze
+	 * @param solution the solution
+	 */
 	public void setSolution(Solution<Position> solution) {
 		this.solution = solution;
 	}

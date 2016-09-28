@@ -708,95 +708,98 @@ public class MyModel extends Observable implements Model {
 				setChanged();
 				notifyObservers(s);
 			}
+			else {
+				Future<String> future = threadPool.submit(new Callable<String>() {
+	
+					@Override
+					public String call() throws Exception {
+	
+						
+						
+						if(parameters[1].toString().equals("bfs"))
+						{
+							MazeAdapter ms=new MazeAdapter(mazeCollection.get(parameters[0]));
+							
+							Searcher<Position> bfs=new BFS<Position>();
+							Solution<Position> sol=bfs.search(ms);
+							
+							//check if solution for the maze already exists, if so, replace it with the new one
+							if(mazeSolutions.containsKey(mazeCollection.get(parameters[0]))) {
+								mazeSolutions.remove(mazeCollection.get(parameters[0]));
+								mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
+							}
+							else {
+								mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
+							}
+							
+							//message to the observers
+							message = "Solution for "+parameters[0]+ " is ready";
+							
+							//thread returns maze name if solve command succeeded
+							return parameters[0];
+							
+							
+						}
+						else if(parameters[1].toString().equals("dfs"))
+						{
+							MazeAdapter ms=new MazeAdapter(mazeCollection.get(parameters[0]));
+							
+							Searcher<Position> dfs=new DFS<Position>();
+							Solution<Position> sol=dfs.search(ms);
+							
+							//check if solution for the maze already exists, if so, replace it with the new one
+							if(mazeSolutions.containsKey(mazeCollection.get(parameters[0]))) {
+								mazeSolutions.remove(mazeCollection.get(parameters[0]));
+								mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
+							}
+							else {
+								mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
+							}
+							
+							//message to the observers
+							message = "Solution for "+parameters[0]+ " is ready";
+							
+							//thread returns maze name if solve command succeeded
+							return parameters[0];
+						}
+						else
+						{	
+							errorCode = "Invalid algorithm";
+							
+							return "error";
+							
+						}
+						
+					}
+				});
 			
-			Future<String> future = threadPool.submit(new Callable<String>() {
-
-				@Override
-				public String call() throws Exception {
-
-					
-					
-					if(parameters[1].toString().equals("bfs"))
-					{
-						MazeAdapter ms=new MazeAdapter(mazeCollection.get(parameters[0]));
-						
-						Searcher<Position> bfs=new BFS<Position>();
-						Solution<Position> sol=bfs.search(ms);
-						
-						//check if solution for the maze already exists, if so, replace it with the new one
-						if(mazeSolutions.containsKey(mazeCollection.get(parameters[0]))) {
-							mazeSolutions.remove(mazeCollection.get(parameters[0]));
-							mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
-						}
-						else {
-							mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
-						}
-						
-						//message to the observers
-						message = "Solution for "+parameters[0]+ " is ready";
-						
-						//thread returns maze name if solve command succeeded
-						return parameters[0];
-						
-						
-					}
-					else if(parameters[1].toString().equals("dfs"))
-					{
-						MazeAdapter ms=new MazeAdapter(mazeCollection.get(parameters[0]));
-						
-						Searcher<Position> dfs=new DFS<Position>();
-						Solution<Position> sol=dfs.search(ms);
-						
-						//check if solution for the maze already exists, if so, replace it with the new one
-						if(mazeSolutions.containsKey(mazeCollection.get(parameters[0]))) {
-							mazeSolutions.remove(mazeCollection.get(parameters[0]));
-							mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
-						}
-						else {
-							mazeSolutions.put(mazeCollection.get(parameters[0]), sol);
-						}
-						
-						//message to the observers
-						message = "Solution for "+parameters[0]+ " is ready";
-						
-						//thread returns maze name if solve command succeeded
-						return parameters[0];
-					}
-					else
-					{	
-						errorCode = "Invalid algorithm";
-						
-						return "error";
-						
-					}
-					
-				}
-			});
+			
 		
-			try {
-				if (future.get() == "error")
-				{
-					//notify the observers that error occurred
-					String[] s = new String[1];
-					s[0] = "error";
-					
-					setChanged();
-					notifyObservers(s);
+				try {
+					if (future.get() == "error")
+					{
+						//notify the observers that error occurred
+						String[] s = new String[1];
+						s[0] = "error";
+						
+						setChanged();
+						notifyObservers(s);
+					}
+					else 
+					{
+						//sending a message notification to the observers
+						String[] s = new String[1];
+						s[0] = "message";
+						
+						setChanged();
+						notifyObservers(s);
+					}
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
 				}
-				else 
-				{
-					//sending a message notification to the observers
-					String[] s = new String[1];
-					s[0] = "message";
-					
-					setChanged();
-					notifyObservers(s);
-				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				e.printStackTrace();
-			}
+		}
 
 	}
 	/**
