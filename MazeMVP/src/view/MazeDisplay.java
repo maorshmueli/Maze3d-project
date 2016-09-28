@@ -12,8 +12,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
+import algorithms.mazeGenarators.Maze3d;
 import algorithms.mazeGenarators.Position;
 import view.MyView;
 
@@ -44,6 +46,7 @@ public class MazeDisplay extends Canvas {
 	private Position goalPosition;
 	private List<Point> downHint;
 	private List<Point> upHint;
+	private Maze3d maze;
 
 	/**
 	 * Constructor 
@@ -56,6 +59,7 @@ public class MazeDisplay extends Canvas {
 		
 		this.mazeName = null;
 		this.whichFloorAmI = 0;
+			
 		this.character = new Character();
 		this.character.setPos(new Position(-1, -1, -1));
 		this.imgGoal = new Image(null,"resources/images/apple.png");
@@ -85,14 +89,16 @@ public class MazeDisplay extends Canvas {
 				int canvasHeight = getSize().y;
 				int cellWidth = canvasWidth / crossSection[0].length;
 				int cellHeight = canvasHeight / crossSection.length;
+				
+				whichFloorAmI = character.getPos().z;
 
 				e.gc.setForeground(new Color(null, 1, 255, 0));
 				e.gc.setBackground(new Color(null, 0, 0, 0));
 
 				for (int i = 0; i < crossSection.length; i++) {
 					for (int j = 0; j < crossSection[i].length; j++) {
-						x = j * cellWidth;
-						y = i * cellHeight;
+						x = i * cellWidth;
+						y = j * cellHeight;
 						if (crossSection[i][j] != 0)
 							//e.gc.fillRectangle(x, y, cellWidth, cellHeight);
 							e.gc.drawImage(imgWall, 0, 0, imgWall.getBounds().width, imgWall.getBounds().height, x, y, cellWidth, cellHeight);
@@ -181,6 +187,47 @@ public class MazeDisplay extends Canvas {
 		//redrawMe();
 	}
 	/**
+	 * move the character by direction string
+	 * @param pos, the position
+	 */
+	public void moveTheCharacterByDirection(String step) {
+		Position nexPos = null;
+		
+		switch (step) {
+		case "Right":
+			nexPos = new Position(character.getPos().z , character.getPos().y , character.getPos().x + 1);
+			break;
+		case "Left":
+			nexPos = new Position(character.getPos().z , character.getPos().y , character.getPos().x - 1);
+			break;
+		case "Up":
+			nexPos = new Position(character.getPos().z , character.getPos().y - 1 , character.getPos().x);
+			break;
+		case "Down":
+			nexPos = new Position(character.getPos().z , character.getPos().y + 1, character.getPos().x);
+			break;
+		case "Backward":
+			nexPos = new Position(character.getPos().z - 1 , character.getPos().y , character.getPos().x);
+			break;
+		case "Forward":
+			nexPos = new Position(character.getPos().z + 1 , character.getPos().y, character.getPos().x);
+			break;
+			
+		default:
+			break;
+		}
+		//if(maze.getMaze3d()[nexPos.z][nexPos.y][nexPos.x] ==0 )
+		if(maze.checkPossibleMove(character.getPos(), step)){
+			drawHint(nexPos);
+			setCrossSection(maze.getCrossSectionByZ(nexPos.z),null,null);
+			moveTheCharacter(nexPos);
+			
+		}
+		
+			
+		
+	}
+	/**
 	 * setMazeName 
 	 * @param String mazeName
 	 */
@@ -222,4 +269,14 @@ public class MazeDisplay extends Canvas {
 			
 		});
 	}
+	
+	public void setMaze(Maze3d maze){
+		this.maze = maze;
+	}
+	
+	public Character getCharacter() {
+		return character;
+	}
+
+	
 }

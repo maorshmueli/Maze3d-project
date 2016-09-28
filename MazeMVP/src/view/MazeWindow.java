@@ -1,9 +1,24 @@
 package view;
 
+import org.eclipse.swt.widgets.Menu;
+
+import org.eclipse.swt.widgets.MenuItem;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
+import javax.swing.JComboBox;
+
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Rectangle;
@@ -18,6 +33,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import algorithms.mazeGenarators.ByLastCell;
 import algorithms.mazeGenarators.GrowingTreeGenerator;
@@ -31,19 +48,20 @@ public class MazeWindow extends BaseWindow {
 
 	private MazeDisplay mazeDisplay;
 	private Properties properties;
-	private HashMap<String, String> guiCommands;
 	
 	
 	public MazeWindow(Properties p) {
 		this.properties = p;
-		this.guiCommands = new GUICommands().getGuiCommands();
 	}
 	
 	@Override
 	protected void initWidgets() {
+		
 		GridLayout gridLayout = new GridLayout(2, false);
 		
-		shell.setLayout(gridLayout);			
+		shell.setLayout(gridLayout);
+		
+		String selectedMaze;
 		
 		
 		// Open in center of screen
@@ -93,12 +111,66 @@ public class MazeWindow extends BaseWindow {
 		Button btnDisplayMaze = new Button(btnGroup, SWT.PUSH);
 		btnDisplayMaze.setText("Display maze");	
 		
+		//text box got which maze do we working on
+		Label lblMaze = new Label(btnGroup, SWT.NONE);
+		lblMaze.setText("Maze Name: ");
+		Text txtMaze = new Text(btnGroup, SWT.BORDER);
+		txtMaze.setText("<Choose_Maze>");
+		
+		//textbox default value
+		txtMaze.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				
+			}
+			
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				txtMaze.setText("");
+
+
+			}
+		});
+
+		/*
+		Combo combo = new Combo(btnGroup, SWT.PUSH);
+		combo.add("maor");
+		combo.add("gilad");
+		
+		
+		combo.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent arg0) {
+				//String selectedMaze = combo.getItem(combo.getSelectionIndex()).toString();
+				String selectedMaze = combo.getText();
+				MessageBox msg = new MessageBox(shell);
+				msg.setMessage(selectedMaze);
+				msg.open();
+				shell.redraw();
+				
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+				
+			}
+		});
+		*/
+		
 		btnDisplayMaze.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent arg0) {
-				//showMaze("Maze1");
-				showDisplayName("Maze1");
+				//setting the maze name
+				mazeDisplay.setMazeName(txtMaze.getText());
+				
+				//notify observers to for returning the maze
+				setChanged();
+				notifyObservers("display "+ txtMaze.getText());
 				
 			}
 			
@@ -112,7 +184,50 @@ public class MazeWindow extends BaseWindow {
 		mazeDisplay = new MazeDisplay(shell, SWT.BORDER);
         mazeDisplay.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true)); //fill all the window size
         mazeDisplay.setFocus();
-		
+        
+        mazeDisplay.addKeyListener(new KeyListener() {
+			String Step = null;
+			@Override
+			public void keyReleased(KeyEvent e) {
+				switch (e.keyCode) {
+				case SWT.ARROW_RIGHT:
+					Step = "Right";
+					break;
+				case SWT.ARROW_LEFT:
+					Step = "Left";
+					break;
+				case SWT.ARROW_UP:
+					Step = "Up";
+					break;
+				case SWT.ARROW_DOWN:
+					Step = "Down";
+					break;
+				case SWT.PAGE_DOWN:
+					Step = "Backward";
+					break;
+				case SWT.PAGE_UP:
+					Step = "Forward";
+					break;
+				default:
+					break;
+				}
+				
+				if(Step != null)
+				{
+					mazeDisplay.moveTheCharacterByDirection(Step);
+					mazeDisplay.redrawMe();
+				}
+				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+        
+
 	}
 
 	protected void showGenerateMazeOptions() {
@@ -163,8 +278,8 @@ public class MazeWindow extends BaseWindow {
 			public void widgetSelected(SelectionEvent arg0) {	
 				
 				//notify observers to generate the maze
-				setChanged();				
-				notifyObservers(guiCommands.get(btnGenerate.getText()) + " "
+				setChanged();
+				notifyObservers("generate_3d_maze" + " "
 						+ txtName.getText() + " " + txtFloors.getText() + " "
 						+ txtRows.getText() + " " + txtCols.getText() + " "
 						+ properties.getGenerateMazeAlgorithm());
@@ -177,8 +292,8 @@ public class MazeWindow extends BaseWindow {
 			}
 		});
 		
-
-		//mazeDisplay = new MazeDisplay(shell, SWT.BORDER);			
+		
+		
 
 		shell.open();		
 		
@@ -264,58 +379,49 @@ public class MazeWindow extends BaseWindow {
 
 	@Override
 	public void showDisplayName(byte[] byteArr) {
-		//try {
-		
-		
-		
-		//byte[] byteArr = mazeByteArrString.getBytes(StandardCharsets.UTF_8);
+
 		//Convert maze from byeArray
-		//Maze3d maze3d = new Maze3d(byteArr);
-		//Set growing maze generator
-		//GrowingTreeGenerator mg = new GrowingTreeGenerator(new ByLastCell());
-		// generate another 3d maze
-		//Maze3d maze3d	=	mg.generate(3,3,3);
-	
-		mazeDisplay = new MazeDisplay(shell, SWT.NONE);			
-		shell.open();
-		
-		/*
-		this.mazeDisplay.setCharacterPosition(maze3d.getStartPosition());
-		
-		int [][] crossSection = maze3d.getCrossSectionByZ(0);
-		
-		this.mazeDisplay.setCrossSection(crossSection, null, null);
-		this.mazeDisplay.setGoalPosition(new Position(3,4,2));
-		this.mazeDisplay.setMazeName("Maze1");
-		*/
-	
-	//} 
-	/*catch (IOException e) 
-	{
-		e.printStackTrace();
-	}*/
-		
-	}
-	
-	
-	public void showDisplayName(String maze) {
-		GrowingTreeGenerator mg = new GrowingTreeGenerator(new ByLastCell());
-		Maze3d maze3d	=	mg.generate(3,3,3);
-		byte[] byteArr = maze.getBytes(StandardCharsets.UTF_8);
-		//Convert maze from byeArray
-		//Maze3d maze3d = new Maze3d(byteArr);
+		Maze3d maze3d = null;
+		try {
+			maze3d = new Maze3d(byteArr);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 
 		Position startPos = maze3d.getFirstInnerCell(); //first cell
 		mazeDisplay.setCharacterPosition(startPos);
 		
+		mazeDisplay.setMaze(maze3d);
 		int [][] crossSection = maze3d.getCrossSectionByZ(startPos.z);
 		
 		mazeDisplay.setCrossSection(crossSection, null, null);
-		mazeDisplay.setGoalPosition(new Position(3,4,2));
-		mazeDisplay.setMazeName("Maze1");
+		//mazeDisplay.setGoalPosition(new Position(3,3,3));
+		mazeDisplay.setGoalPosition(maze3d.getGoalPosition());
+		
+		MessageBox msg = new MessageBox(shell);
+		msg.setMessage(maze3d.toString());
+		msg.open();	
+		
+		//DEBUG
+		Label lbltest = new Label(shell, SWT.NONE);
+		lbltest.setText("start: " + startPos + "\n" + "goal: " + maze3d.getGoalPosition());
+		//to update the changes in the shell
+		shell.layout(true,true);
+		
+		/*
+		MessageBox msg = new MessageBox(shell);
+		msg.setMessage("start: " + startPos + "\n" + "goal: " + maze3d.getGoalPosition());
+		msg.open();	
+		
+		*/
+
 		
 	}
+	
+	
+
 
 	@Override
 	public void showDisplaySolution(Solution<Position> sol) {

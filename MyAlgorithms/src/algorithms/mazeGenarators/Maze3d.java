@@ -569,12 +569,12 @@ public class Maze3d implements Serializable{
 			//Y
 			if((p.y +1 <= this.rows -1) && (this.maze3d[p.z][p.y + 1][p.x] == 0))
 			{
-				directions.add("Up");
+				directions.add("Down");
 			}
 			
 			if((p.y -1 >= 0) && (this.maze3d[p.z][p.y - 1][p.x] == 0))
 			{
-				directions.add("Down");
+				directions.add("Up");
 			}
 			
 			//X
@@ -597,6 +597,24 @@ public class Maze3d implements Serializable{
 			
 			return possibleMoves;
 			
+		}
+		
+		/**
+		 * check if move from a specific position is possible
+		 * @param p position
+		 * @param Move string move description
+		 * @return boolean
+		 */
+		public boolean checkPossibleMove(Position p , String Move) {
+			boolean contains = false;
+			for(String s : getPossibleMovesString(p)) {
+				if (s.equals(Move)){
+					contains = true;
+					break;
+				}
+			}
+	
+			return contains;
 		}
 
 		/**
