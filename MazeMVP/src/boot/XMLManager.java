@@ -3,68 +3,74 @@ package boot;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import presenter.Properties;
 
 public class XMLManager {
 
-	private Properties properties;
-	private String fileName;
+		 
+	private static Properties properties = null;
+		
+		/**
+		 *  readXML from file
+		 *  read all the properties fron the xml
+		 * @return Properties
+		 */
+		public static Properties readXML(File file) {
+			JAXBContext jaxbContext = null;
+			Unmarshaller unmarshaller = null;
+			try {
+				jaxbContext = JAXBContext.newInstance(Properties.class);
+				unmarshaller = jaxbContext.createUnmarshaller();
+				properties = (Properties)unmarshaller.unmarshal(file);
+			} catch (JAXBException e) {
+				e.printStackTrace();
+			}
+			return properties;
+		}
 	
-	public void writeXML(Properties p) throws FileNotFoundException {
-		XMLEncoder xmlEncoder = null;
-		
-		try {
-			xmlEncoder = new XMLEncoder(new FileOutputStream(getFileName()));
-			xmlEncoder.writeObject(p);
-			xmlEncoder.flush();
-			setProperties(p);
+		/**
+		 * writeXml
+		 * write the the xml file 
+		 */
+		public static void writeXml(Properties p) {
+			properties = p;
+			properties.setThreadsNumber(10);
 			
-			xmlEncoder.close();
-		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
-	public void readXML (String fName) {
-		XMLDecoder xmlDecoder = null;
-		setFileName(fName);
-		
-		try {
-			FileInputStream fis = new FileInputStream(fileName);
-			BufferedInputStream bis = new BufferedInputStream(fis);
+			File file = null;
+			JAXBContext jaxbContext = null;
+			Marshaller marshaller = null;
+			try {
+				file = new File("resources/properties.xml");
+				jaxbContext = JAXBContext.newInstance(properties.getClass());
+				marshaller = jaxbContext.createMarshaller();
+				
+				// output printed
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+				marshaller.marshal(properties, file);
+				//marshaller.marshal(properties, System.out);
+				
+			} catch (JAXBException e) {
+				e.printStackTrace();
+			}
 			
-			xmlDecoder = new XMLDecoder(bis);
-			
-			setProperties((Properties)xmlDecoder.readObject());
-			
-			xmlDecoder.close();
 		}
 		
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
+		/**
+		 * getProperties
+		 * @return Properties
+		 */
+		public static Properties getProperties() {
+			return properties;
 		}
 		
-	}
-
-	public Properties getProperties() {
-		return properties;
-	}
-
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
-
-	public String getFileName() {
-		return fileName;
-	}
-
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
 }

@@ -115,6 +115,14 @@ public class CommandManager {
 				
 			}
 		});
+		viewStringToCommand.put("properties", new Command() {
+			
+			@Override
+			public void doCommand(String[] args) {
+				m.handleLoadXML(args);
+				
+			}
+		});
 		viewStringToCommand.put("exit", new Command() {
 			
 			@Override

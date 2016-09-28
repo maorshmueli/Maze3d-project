@@ -1,6 +1,7 @@
 package boot;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Observable;
@@ -28,11 +29,15 @@ public class Run {
 		
 		((Observable) model).addObserver(pres);
 		((Observable) view).addObserver(pres);
-		*/
+		
 		//CLI
-		//view.start();
+		view.start();
+		*/
+		
+		//XMLManager.writeXml(new Properties());
 		
 		
+	
 		//GUI
 		View view = new MyView(in , out);
 		Model model = new MyModel(new Properties());
@@ -42,6 +47,7 @@ public class Run {
 		((Observable) model).addObserver(pres);
 		((Observable) view).addObserver(pres);
 		view.start();
+		
 
 	}
 

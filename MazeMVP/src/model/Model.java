@@ -1,6 +1,8 @@
 
 package model;
 
+import java.io.File;
+
 import algorithms.mazeGenarators.Position;
 import algorithms.search.Solution;
 
@@ -111,5 +113,11 @@ public interface Model {
 	 * @return mazes string array
 	 */
 	public String[] GetMazesList();
+	
+	/**
+	 * load properties xml file from a location
+	 * @param args xml file
+	 */
+	public void handleLoadXML(String[] args);
 	
 }

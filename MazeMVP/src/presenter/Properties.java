@@ -2,9 +2,12 @@ package presenter;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.*;
+
+@XmlRootElement
 public class Properties implements Serializable{
 
-	private static final long serialVersionUID = 1L;
+	//private static final long serialVersionUID = 1L;
 	
 	private int threadsNumber;
 	private String searchAlgorithm;
@@ -51,6 +54,7 @@ public class Properties implements Serializable{
 	 * set the number of threads
 	 * @param threadsNumber
 	 */
+	@XmlElement
 	public void setThreadsNumber(int threadsNumber) {
 		this.threadsNumber = threadsNumber;
 	}
@@ -67,6 +71,7 @@ public class Properties implements Serializable{
 	 * set the search algorithm
 	 * @param searchAlgorithm 
 	 */
+	@XmlElement
 	public void setSearchAlgorithm(String searchAlgorithm) {
 		this.searchAlgorithm = searchAlgorithm;
 	}
@@ -83,6 +88,7 @@ public class Properties implements Serializable{
 	 * set the maze generating algorithm
 	 * @param generateMazeAlgorithm
 	 */
+	@XmlElement
 	public void setGenerateMazeAlgorithm(String generateMazeAlgorithm) {
 		this.generateMazeAlgorithm = generateMazeAlgorithm;
 	}

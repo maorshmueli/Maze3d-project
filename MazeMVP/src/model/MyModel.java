@@ -37,14 +37,16 @@ import algorithms.search.BFS;
 import algorithms.search.DFS;
 import algorithms.search.Searcher;
 import algorithms.search.Solution;
+import boot.XMLManager;
 import io.MyCompressorOutputStream;
 import io.MyDecompressorInputStream;
+import presenter.Properties;
 /**
  * generating the code behind each command
  * @author Maor Shmueli
  *
  */
-import presenter.Properties;
+
 
 public class MyModel extends Observable implements Model {
 	private HashMap<String, Maze3d> mazeCollection;//hash map that storing mazes with key name
@@ -66,7 +68,11 @@ public class MyModel extends Observable implements Model {
 	 */
 	public MyModel(Properties p) {
 		super();
-		this.properties = p;
+		//this.properties = p;
+		//load properties file from default location
+		String[] s = new String[1];
+		s[0] = "resources/properties.xml";
+		handleLoadXML(s);
 		mazeCollection = new HashMap<String, Maze3d>();
 		threadPool = Executors.newFixedThreadPool(p.getThreadsNumber());
 		
@@ -77,6 +83,40 @@ public class MyModel extends Observable implements Model {
 		loadSolutions();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public void handleLoadXML(String[] paramArray){
+		if (paramArray.length != 1){
+			errorCode = "Invalid path";
+			
+			//notify the observers that error occurred
+			String[] s = new String[1];
+			s[0] = "error";
+			
+			setChanged();
+			notifyObservers(s);
+			
+			return;
+		}
+		this.properties = new Properties(XMLManager.readXML(new File(paramArray[0])));
+		
+		//notify by message
+		message = "Properties file loaded successfully";
+		String[] s = new String[1];
+		s[0] = "message";
+		
+		setChanged();
+		notifyObservers(s);
+		
+		message = properties.getGenerateMazeAlgorithm();
+		//String[] s = new String[1];
+		s[0] = "message";
+		
+		setChanged();
+		notifyObservers(s);
+		return;
+	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -886,7 +926,7 @@ public class MyModel extends Observable implements Model {
 	private void saveSolutions() {
 		ObjectOutputStream oos = null;
 		try {
-		    oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("solutions.dat")));
+		    oos = new ObjectOutputStream(new GZIPOutputStream(new FileOutputStream("resources/saved_mazes/solutions.dat")));
 			oos.writeObject(mazeCollection);
 			oos.writeObject(mazeSolutions);			
 			
@@ -907,14 +947,14 @@ public class MyModel extends Observable implements Model {
 	}
 	
 	private void loadSolutions() {
-		File file = new File("solutions.dat");
+		File file = new File("resources/saved_mazes/solutions.dat");
 		if (!file.exists())
 			return;
 		
 		ObjectInputStream ois = null;
 		
 		try {
-			ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream("solutions.dat")));
+			ois = new ObjectInputStream(new GZIPInputStream(new FileInputStream("resources/saved_mazes/solutions.dat")));
 			mazeCollection = (HashMap<String, Maze3d>)ois.readObject();
 			mazeSolutions = (HashMap<Maze3d, Solution<Position>>)ois.readObject();
 		} catch (FileNotFoundException e) {
