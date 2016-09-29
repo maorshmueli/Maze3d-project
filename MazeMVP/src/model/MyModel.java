@@ -50,7 +50,7 @@ import presenter.Properties;
 
 public class MyModel extends Observable implements Model {
 	private HashMap<String, Maze3d> mazeCollection;//hash map that storing mazes with key name
-	private ExecutorService threadPool;
+	private ExecutorService threadPool; //threads to run things in the background
 	private HashMap<String, String> mazeToFile;//hash map with key-name of maze,value-the file name where the maze is saved
 	private HashMap<Maze3d, Solution<Position>> mazeSolutions;//hash map that hold the solution for mazes
 	private Properties properties; //properties from xml file
@@ -109,12 +109,6 @@ public class MyModel extends Observable implements Model {
 		setChanged();
 		notifyObservers(s);
 		
-		message = properties.getGenerateMazeAlgorithm();
-		//String[] s = new String[1];
-		s[0] = "message";
-		
-		setChanged();
-		notifyObservers(s);
 		return;
 	}
 	/**
@@ -923,6 +917,10 @@ public class MyModel extends Observable implements Model {
 			return;
 		}
 	}
+	
+	/**
+	 * save the solutions to a file
+	 */
 	private void saveSolutions() {
 		ObjectOutputStream oos = null;
 		try {
@@ -946,6 +944,9 @@ public class MyModel extends Observable implements Model {
 		}
 	}
 	
+	/**
+	 * load the solutions from a file
+	 */
 	private void loadSolutions() {
 		File file = new File("resources/saved_mazes/solutions.dat");
 		if (!file.exists())
@@ -972,23 +973,42 @@ public class MyModel extends Observable implements Model {
 		}		
 	}
 	
-	
+	/**
+	 * get the errorCode
+	 * @return errorcode
+	 */
 	public String getErrorCode() {
 		return errorCode;
 	}
 
+	/**
+	 * get the message text
+	 * @return message
+	 */
 	public String getMessage() {
 		return message;
 	}
 
+	/**
+	 * get dir path
+	 * @return dirPath String[]
+	 */
 	public String[] getDirPath() {
 		return dirPath;
 	}
 
+	/**
+	 * get CrossSection
+	 * @return CrossSection String
+	 */
 	public String getCrossSection() {
 		return crossSection;
 	}
 
+	/**
+	 * get solution
+	 * @return solution Solution<Position>
+	 */
 	public Solution<Position> getSolution() {
 		return solution;
 	}
@@ -1027,6 +1047,14 @@ public class MyModel extends Observable implements Model {
 	public String[] GetMazesList() {
 		return mazeCollection.keySet().toArray(new String[0]);
 
+	}
+	
+	/**
+	 * get properties
+	 * @return properties 
+	 */
+	public Properties getProperties(){
+		return this.properties;
 	}
 	
 }

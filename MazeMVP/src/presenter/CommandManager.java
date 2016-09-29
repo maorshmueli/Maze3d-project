@@ -5,6 +5,12 @@ import java.util.HashMap;
 import model.Model;
 import view.View;
 
+/**
+ * CommandManager class
+ * holds a HashMap for link between command string and its action
+ * @author Maor Shmueli
+ *
+ */
 public class CommandManager {
 
 	private Model m;
@@ -12,6 +18,11 @@ public class CommandManager {
 	protected HashMap<String, Command> viewStringToCommand;
 	protected HashMap<String, Command> modelStringToCommand;
 	
+	/**
+	 * CommandManager constructor by values
+	 * @param m model
+	 * @param v view
+	 */
 	public CommandManager(Model m , View v) {
 		this.m = m;
 		this.v = v;
@@ -20,6 +31,9 @@ public class CommandManager {
 		initCommands();
 	}
 	
+	/**
+	 * initialize the commands
+	 */
 	protected void initCommands() 
 	{
 		//**************Commands from view***************
@@ -196,11 +210,19 @@ public class CommandManager {
 		
 	}
 	
+	/**
+	 * get the view commands HashMap
+	 * @return HashMap<String, Command>
+	 */
 	public HashMap<String, Command> getViewCommands()
 	{
 		return viewStringToCommand;
 	}
 	
+	/**
+	 * get the model commands HashMap
+	 * @return HashMap<String, Command>
+	 */
 	public HashMap<String, Command> getModelCommands()
 	{
 		return modelStringToCommand;

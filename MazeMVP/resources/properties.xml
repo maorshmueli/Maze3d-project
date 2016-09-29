@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <properties>
+    <gameType>GUI</gameType>
     <generateMazeAlgorithm>growing ByLastCell</generateMazeAlgorithm>
     <searchAlgorithm>bfs</searchAlgorithm>
     <threadsNumber>10</threadsNumber>

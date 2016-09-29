@@ -7,6 +7,12 @@ import java.util.Observer;
 import model.Model;
 import view.View;
 
+/**
+ * Presenter class implements Observer
+ * link between the view and the model by listening to observable notification
+ * @author Maor Shmueli
+ *
+ */
 public class Presenter implements Observer{
 
 	Model m;
@@ -60,6 +66,7 @@ public class Presenter implements Observer{
 			}
 		}
 		
+		//if notified by the model
 		if(ob == m){
 			String[] command = (String[])arg;
 			

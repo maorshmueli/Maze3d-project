@@ -7,7 +7,7 @@ import algorithms.mazeGenarators.Position;
 import algorithms.search.Solution;
 
 /**
- * the model interface perform all the background calculations,than pass them to the controller..
+ * the model interface perform all the background calculations
  * this is the facade of the model
  * @author Maor Shmueli
  *

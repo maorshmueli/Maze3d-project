@@ -15,6 +15,12 @@ import javax.xml.bind.Unmarshaller;
 
 import presenter.Properties;
 
+/**
+ * XMLManager class
+ * use for reading and writing the XML properties file
+ * @author Maor Shmueli
+ *
+ */
 public class XMLManager {
 
 		 
@@ -22,7 +28,7 @@ public class XMLManager {
 		
 		/**
 		 *  readXML from file
-		 *  read all the properties fron the xml
+		 *  read all the properties from the xml
 		 * @return Properties
 		 */
 		public static Properties readXML(File file) {
@@ -44,7 +50,6 @@ public class XMLManager {
 		 */
 		public static void writeXml(Properties p) {
 			properties = p;
-			properties.setThreadsNumber(10);
 			
 			File file = null;
 			JAXBContext jaxbContext = null;
